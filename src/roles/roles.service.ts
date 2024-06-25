@@ -15,10 +15,11 @@ export class RolesService {
     //if exists throw error Role <name> already exists.
     // if not continue with the request
     
-    const roleExits = await this.checkIfRoleExistsByName(createRoleDto.name);
-    
+    //const roleExits = await this.checkIfRoleExistsByName(createRoleDto.name);
+    const checkIfRoleExists = await this.prismaService.role
+    .findUnique({ where: { name: createRoleDto.name}})
 
-    if (roleExits){
+    if (checkIfRoleExists){
       throw new BadRequestException(`Role ${createRoleDto.name} already exists`);
     }
     return this.prismaService.role.create({
