@@ -38,4 +38,68 @@ model User{
   updated_at DateTime @default(now())
 
   role Role @relation(references: [id], fields: [role_id], onDelete: Cascade)//cascade deletes all information related to role
+  items Item[]
 }//SetNull garda role delete hunxa ani role_id ma null basxa
+
+model Item{
+  @@map("items")
+
+  id Int @id @default(autoincrement())
+  user_id Int
+  name String @unique
+  description String? @db.Text
+  quantity Int @default(0)
+  price Decimal @db.Decimal(10, 2) @default(0.00)
+  discount Decimal @db.Decimal(5, 2) @default(0.00)
+  unit String @db.VarChar(20) @default("pcs")
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+
+  user User @relation(references: [id], fields: [user_id], onDelete: Cascade)
+  sales SaleItem[]
+}
+
+model CustomerVendor{
+  @@map("customers_vendors")
+
+  id Int @id @default(autoincrement())
+  name String
+  email String? @db.VarChar(100)
+  phone Int? @db.Int
+  street_address String? @db.VarChar(100)
+  city String? @db.VarChar(100)
+  province String? @db.VarChar(100)
+  zip_code Int?
+  is_vendor Boolean @default(false)
+
+  sales Sale[]
+}
+
+model Sale{
+  @@map("sales")
+
+  id Int @id @default(autoincrement())
+  customer_id Int
+  order_date DateTime 
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+
+  customer CustomerVendor @relation(fields: [customer_id], references: [id], onDelete: Cascade)
+  items SaleItem[]
+}
+
+model SaleItem{
+  @@map("sale_items")
+
+  id Int @id @default(autoincrement())
+  sale_id Int
+  item_id Int
+  quantity Int
+  price Decimal @db.Decimal(5, 2) @default(0.00)
+  discount Decimal @db.Decimal(5, 2) @default(0.00)
+  tax Decimal @db.Decimal(5, 2) @default(0.00)
+  sub_total Decimal @db.Decimal(10, 2) @default(0.00)
+
+  sale Sale @relation(fields: [sale_id], references: [id])
+  item Item @relation(fields: [item_id], references: [id])
+}
