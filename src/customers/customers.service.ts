@@ -32,8 +32,8 @@ export class CustomersService {
     await this.checkIfCustomerExists(id);
     const checkIfCustomerExists = await this.checkIfCustomerExistsByEmail(updateCustomerDto.email, id);//only in case of unique field
 
-    if(checkIfCustomerExists) {
-      throw new BadRequestException(`Customer ${updateCustomerDto.email} already exists.`)
+    if(!checkIfCustomerExists) {
+      throw new BadRequestException(`Customer ${updateCustomerDto.email} does not exists.`)
     }
 
     return this.prismaService.customerVendor
